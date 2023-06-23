@@ -62,23 +62,8 @@ def get_first_paragraph(responses):
         for p in wikipedia.find_all('p'):
             # Find the first paragraph and clean it up
             if re.match("(^<p><b>(.*?)<\/b>)", str(p)):
-                # Remove tags
-                paragraph = re.sub("<.*?>", "", str(p))
-                # Remove phonetics
-                paragraph = re.sub("\(?\/.*?\;", "(", str(paragraph))
-                # Remove [n]
-                paragraph = re.sub("\[.\]", "", str(paragraph))
-                paragraph = re.sub("\[.*\](\[.*\])?", "", str(paragraph))
-                # Remove trailing \n
-                paragraph = re.sub("\\n", "", str(paragraph))
-                # Remove various strings
-                paragraph = re.sub(".\(background(.*?)couter\).", "", str(paragraph))
-                paragraph = re.sub(".(\(?)\.mw(.*?)couter\).", "", str(paragraph))
-                paragraph = re.sub(" ? .mw(.*?)couter.", "", str(paragraph))
-                paragraph = re.sub(" Dutch pronunciation: (\[.*\])? ;", "", str(paragraph))
-                paragraph = re.sub("\(? ?uitspraak", "", str(paragraph))
-                paragraph = re.sub("\(info \/ uitleg\)\)?", "", str(paragraph))
-                # Remove extra whitespaces
+                # Cleanup file
+                paragraph = re.sub("<.*?>|\(?\/.*?\;|\[.\]|\[.*\](\[.*\])?|\\n|.\(background(.*?)couter\).|\.(\(?)\.mw(.*?)couter\).| ? .mw(.*?)couter.| Dutch pronunciation: (\[.*\])? ;|\(? ?uitspraak|\(info \/ uitleg\)\)?", "", str(p))
                 paragraph = re.sub("( ){2,}", " ", str(paragraph.strip()))
                 leaders['info'] = paragraph
                 leaders_per_country.setdefault(countries, []).append(leaders)

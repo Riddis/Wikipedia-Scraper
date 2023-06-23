@@ -42,24 +42,9 @@ def get_first_paragraph():
             for p in wikipedia.find_all('p'):
                 # Find the first paragraph and clean it up
                 if re.match("(^<p><b>(.*?)<\/b>)", str(p)):
-                    # remove tags
-                    first_paragraph = re.sub("<.*?>", "", str(p))
-                    # remove phonetics
-                    first_paragraph = re.sub("\(?\/.*?\;", "(", str(first_paragraph))
-                    # remove [n]
-                    first_paragraph = re.sub("\[.\]", "", str(first_paragraph))
-                    first_paragraph = re.sub("\[.*\](\[.*\])?", "", str(first_paragraph))
-                    # remove trailing \n
-                    first_paragraph = re.sub("\\n", "", str(first_paragraph))
-                    # remove various strings
-                    first_paragraph = re.sub(".\(background(.*?)couter\).", "", str(first_paragraph))
-                    first_paragraph = re.sub(".(\(?)\.mw(.*?)couter\).", "", str(first_paragraph))
-                    first_paragraph = re.sub(" ? .mw(.*?)couter.", "", str(first_paragraph))
-                    first_paragraph = re.sub(" Dutch pronunciation: (\[.*\])? ;", "", str(first_paragraph))
-                    first_paragraph = re.sub("\(? ?uitspraak", "", str(first_paragraph))
-                    first_paragraph = re.sub("\(info \/ uitleg\)\)?", "", str(first_paragraph))
-                    # Remove extra whitespaces
-                    first_paragraph = re.sub("( ){2,}", " ", str(first_paragraph)) # Not working for some reason :'(
+                    # Cleanup file
+                    paragraph = re.sub("<.*?>|\(?\/.*?\;|\[.\]|\[.*\](\[.*\])?|\\n|.\(background(.*?)couter\).|\.(\(?)\.mw(.*?)couter\).| ? .mw(.*?)couter.| Dutch pronunciation: (\[.*\])? ;|\(? ?uitspraak|\(info \/ uitleg\)\)?", "", str(p))
+                    paragraph = re.sub("( ){2,}", " ", str(paragraph.strip()))
                     leaders['info'] =  first_paragraph
                     # First paragraph has been found, stop the loop
                     break 
