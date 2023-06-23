@@ -2,7 +2,7 @@
 
 - Repository: `Wikipedia Scrapper`
 - Type of Challenge: `Learning`
-- Time Spent: `2 days`
+- Time Spent: `2 days on the main project, half a day on the bonus async version`
 
 - Team challenge : `Solo`
 
