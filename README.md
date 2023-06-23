@@ -16,6 +16,7 @@ In this project, we will guide you step by step through the process of:
 2. retrieving some information from an API (a website for computers)
 3. leveraging it to scrape a website that does not provide an API
 4. saving the output for later processing
+5. as a bonus exercise, I also created an asynchronous version
 
 Here we query an API for a list of countries and their past leaders. We then extract and sanitize their short bio from Wikipedia. Finally, we save the data to disk.
 
@@ -31,8 +32,13 @@ You will need to install the following modules:
 
 1. Requests
 2. BeautifulSoup (bs4)
+3. Aiohttp (bonus)
 
 ## Usage
 
-You can run the script by running `python main.py` in the terminal
-It will save the data in the data.json file
+You can run the synchronous script by running `python main.py` in the terminal
+It will save the data in a .\data.json file
+
+You can run the asynchronous script by running `python main_async.py` in the terminal
+It will save the data in a .\data_async.json file
+
