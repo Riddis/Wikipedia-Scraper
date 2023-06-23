@@ -77,3 +77,39 @@ def save(leaders):
     """Saves a JSON file to './data_async.json'"""
     with open('./data_async.json', 'w') as file:
         json.dump(leaders, file)
+
+
+start = time.perf_counter()
+end = time.perf_counter()
+execution_time = round((end - start), 2)
+print(f'Getting leaders took {execution_time} sec')
+
+bigstart = time.perf_counter()
+# Run the program
+start = time.perf_counter()
+leaders_per_country = get_leaders()
+end = time.perf_counter()
+execution_time = round((end - start), 2)
+print(f'Getting leaders took {execution_time} sec')
+
+start = time.perf_counter()
+responses = asyncio.run(session_loop_request_async(leaders_per_country))
+end = time.perf_counter()
+execution_time = round((end - start), 2)
+print(f'Getting wiki contents took {execution_time} sec')
+
+start = time.perf_counter()
+leaders_per_country = get_first_paragraph(responses)
+end = time.perf_counter()
+execution_time = round((end - start), 2)
+print(f'Cleanup took {execution_time} sec')
+
+start = time.perf_counter()
+save(leaders_per_country)
+end = time.perf_counter()
+execution_time = round((end - start), 2)
+print(f'Saving took {execution_time} sec')
+
+bigend = time.perf_counter()
+execution_time = round((bigend - bigstart), 2)
+print(f'Everything together took {execution_time} sec')

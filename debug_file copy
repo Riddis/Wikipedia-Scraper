@@ -2,9 +2,9 @@ import asyncio
 import aiohttp
 import json
 import re
-from bs4 import BeautifulSoup as soup
 import requests
 import time
+from bs4 import BeautifulSoup as soup
 
 def get_leaders():
     """Loops through and returns all the leaders per country"""
@@ -17,15 +17,15 @@ def get_leaders():
     session = requests.Session() 
 
     # Get a cookie
-    cookies=(session.get(cookie_url)).cookies
+    cookies = (session.get(cookie_url)).cookies
     # Get the list of countries
     countries = (session.get(countries_url, cookies=cookies)).json()
     # Loop through the list of countries and get their leaders
     for country in countries:
-        url = leaders_url+"?country="+country
+        url = leaders_url + "?country=" + country
         leaders_per_country[country] = (session.get(url, cookies=cookies)).json()
 
-    # Return the list of leadders per country
+    # Return the list of leaders per country
     return leaders_per_country
 
 async def get_wikipedia_info(url, session, countries, leaders):
@@ -59,21 +59,42 @@ def get_first_paragraph(responses):
     # Loop through responses
     for countries, leaders, response in responses:
         wikipedia = soup(response, 'html.parser')
-        # Get all paragraphs on the page
-        for p in wikipedia.find_all('p'):
-            # Find the first paragraph and clean it up
-            if re.match("(^<p><b>(.*?)<\/b>)", str(p)):
-                # Cleanup file
-                paragraph = re.sub("<.*?>|\(?\/.*?\;|\[.\]|\[.*\](\[.*\])?|\\n|.\(background(.*?)couter\).|\.(\(?)\.mw(.*?)couter\).| ? .mw(.*?)couter.| Dutch pronunciation: (\[.*\])? ;|\(? ?uitspraak|\(info \/ uitleg\)\)?", "", str(p))
-                paragraph = re.sub("( ){2,}", " ", str(paragraph.strip()))
-                leaders['info'] = paragraph
-                leaders_per_country.setdefault(countries, []).append(leaders)
-                # First paragraph has been found, stop the loop
-                break
+        # Get the first paragraph
+        first_paragraph = wikipedia.find('p', string=re.compile('^<b>'))
+        if first_paragraph:
+            # Cleanup paragraph text
+            paragraph_text = first_paragraph.get_text(separator=' ', strip=True)
+            # Sanitize the output
+            paragraph_text = re.sub(r"\(.*?\)", "", paragraph_text)
+            paragraph_text = re.sub(r"\[.*?\]", "", paragraph_text)
+            paragraph_text = re.sub(r"\s+", " ", paragraph_text)
+
+            leaders['info'] = paragraph_text
+            leaders_per_country.setdefault(countries, []).append(leaders)
 
     return leaders_per_country
 
 def save(leaders):
     """Saves a JSON file to './data_async.json'"""
-    with open('./data_async.json', 'w') as file:
+    with open('./debugdata_async.json', 'w') as file:
         json.dump(leaders, file)
+
+async def main():
+    start = time.perf_counter()
+
+    leaders_per_country = get_leaders()
+    print(f"Getting leaders took {time.perf_counter() - start:.2f} sec")
+
+    start = time.perf_counter()
+    responses = await session_loop_request_async(leaders_per_country)
+    print(f"Getting wiki contents took {time.perf_counter() - start:.2f} sec")
+
+    start = time.perf_counter()
+    leaders_per_country = get_first_paragraph(responses)
+    print(f"Cleanup took {time.perf_counter() - start:.2f} sec")
+
+    start = time.perf_counter()
+    save(leaders_per_country)
+    print(f"Saving took {time.perf_counter() - start:.2f} sec")
+
+asyncio.run(main())

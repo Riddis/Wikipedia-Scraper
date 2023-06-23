@@ -45,7 +45,7 @@ def get_first_paragraph():
                     # Cleanup file
                     paragraph = re.sub("<.*?>|\(?\/.*?\;|\[.\]|\[.*\](\[.*\])?|\\n|.\(background(.*?)couter\).|\.(\(?)\.mw(.*?)couter\).| ? .mw(.*?)couter.| Dutch pronunciation: (\[.*\])? ;|\(? ?uitspraak|\(info \/ uitleg\)\)?", "", str(p))
                     paragraph = re.sub("( ){2,}", " ", str(paragraph.strip()))
-                    leaders['info'] =  first_paragraph
+                    leaders['info'] = paragraph
                     # First paragraph has been found, stop the loop
                     break 
     return leaders_per_country
